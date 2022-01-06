@@ -54,55 +54,46 @@ The Open Payments data set contains records of payments made by drug and medical
          * Space rental or facility fees (teaching hospital only)
     * applicable group purchasing organization (GPO)   
         * “entities that operate in the United States and purchase, arrange for or negotiate the purchase of covered drugs, devices, biologicals, or medical supplies for a group of individuals or entities, but not solely for use by the entity itself”
-applicable manufacturers
-engaged in the production, preparation, propagation, compounding, or conversion of a covered drug, device, biological, or medical supply, but not if such covered drug, device, biological or medical supply is solely for use by or within the entity itself or by the entity's own patients (this definition does not include distributors or wholesalers (including, but not limited to, repackagers, relabelers, and kit assemblers) that do not hold title to any covered drug, device, biological or medical supply)
-entities under common ownership with entity meeting the above criteria
-national provider identifier (NPI)
-unique identification number for covered health care providers 
+    * applicable manufacturers
+        * engaged in the production, preparation, propagation, compounding, or conversion of a covered drug, device, biological, or medical supply, but not if such covered drug, device, biological or medical supply is solely for use by or within the entity itself or by the entity's own patients (this definition does not include distributors or wholesalers (including, but not limited to, repackagers, relabelers, and kit assemblers) that do not hold title to any covered drug, device, biological or medical supply)
+        * entities under common ownership with entity meeting the above criteria
+    * national provider identifier (NPI)
+        * unique identification number for covered health care providers 
 10 digit 
-newly added covered recipients
-as of Jan 2021,  physician assistants, nurse practitioners, clinical nurse specialists, certified registered nurse anesthetists & anesthesiologist assistants, and certified nurse-midwives are now included 
+    * newly added covered recipients
+        * as of Jan 2021,  physician assistants, nurse practitioners, clinical nurse specialists, certified registered nurse anesthetists & anesthesiologist assistants, and certified nurse-midwives are now included 
 non-physician practitioner covered recipient
 providers practicing in collaboration with or under supervision of physician
-non-physician practitioners = NPPs
-ownership or investment interest
-included (but not limited to):
-Stock
-Stock option(s) (other than those received as compensation, until they are exercised)
-Partnership share(s)
-Limited liability company membership(s)
-Loans
-Bonds or
-Other financial instruments that are secured with an entity’s property or revenue or a portion of that property or revenue
-physician
-includes:
-Doctors of Medicine or Osteopathic Medicine
-Doctors of Dental Medicine or Dental Surgery
-Doctors of Podiatric Medicine
-Doctors of Optometry
-Chiropractors
-medical residents excluded 
-reporting entities
-applicable manufacturers or applicable GPOs 
-teaching hospital 
-hospitals that receive payment for any of:
- Medicare direct graduate medical education (GME)
- IPPS indirect medical education (IME)
- psychiatric hospital IME programs
-covered products
-Reimbursed by Medicare, Medicaid, or Children’s Health
+        * non-physician practitioners = NPPs
+    * ownership or investment interest
+        * includes (but not limited to): stock, partnership shares, limited liability company memberships, loans, bonds
+    * physician
+         * includes:
+            * Doctors of Medicine or Osteopathic Medicine
+            * Doctors of Dental Medicine or Dental Surgery
+            * Doctors of Podiatric Medicine
+            * Doctors of Optometry
+            * Chiropractors
+        * medical residents excluded 
+    * reporting entities
+        * applicable manufacturers or applicable GPOs 
+    * teaching hospital 
+        * hospitals that receive payment for any of:
+            * Medicare direct graduate medical education (GME)
+            *  IPPS indirect medical education (IME)
+            *  psychiatric hospital IME programs
+    * covered products
+        * Reimbursed by Medicare, Medicaid, or Children’s Health
 Insurance Program AND the product is a drug or biological, and it requires a prescription (or doctor’s authorization) to administer 
-OR the product is a device or medical supply, and it requires premarket approval or premarket notification by the FDA
-Timeline 
-image from https://www.cms.gov/openpayments
-
-data collection: all year (Jan 1 - Dec 31)
-reporting entities record payments made to covered recipients
-data submission: Feb 1 - March 31
-reporting entities submit the recorded data from the previous year 
-data review: Apr 1 - May 30
-covered recipients can review the submitted data related to them and initiate a dispute if necessary (but CMS does not mediate disputes)
+        * OR the product is a device or medical supply, and it requires premarket approval or premarket notification by the FDA
+* [Timeline](https://www.cms.gov/openpayments)
+    * data collection: all year (Jan 1 - Dec 31)
+        * reporting entities record payments made to covered recipients
+    * data submission: Feb 1 - March 31
+        * reporting entities submit the recorded data from the previous year 
+    * data review: Apr 1 - May 30
+        * covered recipients can review the submitted data related to them and initiate a dispute if necessary (but CMS does not mediate disputes)
 this review and dispute process is optional; covered recipients may choose to not review the data 
-data publication: on or by June 30th
-CMS releases the data, available at OpenPaymentsData.cms.gov
+    * data publication: on or by June 30th
+        * CMS releases the data, available at OpenPaymentsData.cms.gov
 
