@@ -1,0 +1,17 @@
+---
+title: "Open_Payments_Guide"
+author: "Quinn White"
+date: "1/5/2022"
+output: html_document
+output: 
+  rmdformats::readthedown:
+    df_print: paged
+    code_folding: hide
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)
+```
+
