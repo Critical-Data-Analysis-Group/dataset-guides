@@ -36,8 +36,16 @@ These transfers of value are collected throughout the entire calendar year, and 
 
 
 
+### Impact of the Open Payments System
 
-Discussion from the Parties Implicated in this Data
+In many ways, the Sunshine Act has represented a much needed shift toward greater transparency ([Source](https://www.statnews.com/2017/01/25/sunshine-act-physicians-conflict-of-interest/)) Historically, relying on medical providers to disclose potential conflicts of interest in medical journal articles has not been effective. To look at compliance with financial disclosures in medical papers, one study looked at payments made by several orthopedic device companies device companies to their consultants in 2007, before the implementation of the Open Payments System ([Source](https://jamanetwork.com/journals/jamainternalmedicine/fullarticle/226394)). 
+A financial interest was disclosed in less than half of papers with a co-author receiving a million or more from one of the analyzed device companies. Of note, failing to disclose these financial conflicts of interest goes against the policies upheld by many of the medical journals included. 
+
+Additionally, assessment of panel members that develop clinical guidelines found a high prevalence of financial conflicts of interest, particularly in the areas of diabetes, hyperlipidaemia, and cardiovascular disease ([Source](https://www.bmj.com/content/343/bmj.d5621)), which is particularly notable given the impact these guidelines have on the care patients receive. 
+
+There are also important concerns regarding the impact of industry ties on ramping up health care costs. One study found a dose dependent relationship between the meals a physician received that were sponsored by a drug company and the rate at which the physician prescribed that drug ([Source](https://jamanetwork.com/journals/jamainternalmedicine/article-abstract/2528290)). That is, more meals paid for by the drug company, and more costly meals, were associated with higher prescription rates of that drug. Because this work was cross-sectional and identified associations, there is a need for more studies evaluating whether there is a causal link between industry-sponsored meals and prescribing rates as well as other forms of industry ties. Findings like this challenge the perception that industry ties are benign, and emphasizes the potential they have to shape the quality and cost of care that patients receive.
+
+ProPublica found a similar trend in analysis of data from the Open Payments system in 2014, with higher amounts of money received from drug or device companies being associated with higher brand-name prescribing rates. This is notable since generic options are less aggressively marketed but much more affordable, despite showing similar rates of efficacy compared to name brand drugs ([Source](https://www.fda.gov/drugs/generic-drugs/generic-drug-facts)). 
 
 
 ### Background 
