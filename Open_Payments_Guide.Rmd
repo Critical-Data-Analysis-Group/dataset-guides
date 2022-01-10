@@ -183,6 +183,7 @@ specialty_payments <- payments_phys_info %>%
 First, we can get a better understanding of how payments differ by Primary Specialty. 
 
 ```{r, total amounts per primary specialty}
+
 # look at total amounts per primary specialty
 specialty_payments %>% 
   group_by(Primary_Specialty) %>% 
@@ -217,12 +218,30 @@ specialty_payments %>%
 ```
 
 
-It is clear that Allopathic & Osteopathic Physicians make up the vast majority of payments, which is logical given that this division contains the highest number of subspecialties. Now, we can look at how payments are split up among the Allopathic & Osteopathic Physician specialties.
+It is clear that Allopathic & Osteopathic Physicians make up the vast majority of payments, which is logical given that this division contains the highest number of subspecialties. Now, we can look at how payments are split up among the Allopathic & Osteopathic Physician specialties. 
 
 
-```{r}
+```{r, fig.height = 9}
+
+specialty_payments %>% 
+  filter(Primary_Specialty == "Allopathic & Osteopathic Physicians") %>% 
+  ggplot(aes(x = fct_reorder(factor(Specific_Specialty),  Total_Specialty), y = Total_Specialty)) +
+  geom_bar(stat = "identity", fill = "#525F75") +
+  coord_flip() +
+  labs(title = "Total Payments by Primary Specialty",
+       x = "",
+       y = "Total Payments") +
+  scale_y_continuous(labels = comma, expand = c(0,0), limits = c(0, 4.5*10^8)) +
+  theme_bw() +
+  theme(text = element_text(size = 13),
+        axis.text.y = element_text(size = 13),
+        axis.title = element_text(face = "bold"),
+        axis.text.x = element_text(),
+        plot.title = element_text(face = "bold", hjust = .5))
 
 ```
+
+Because medical devices are so integral to the practice of orthopaedic surgery, it is unsurprising that this specialty receives the highest amount from industry ([Source](https://journals.sagepub.com/doi/10.1177/0363546517750124)). With this information, we might want to look at a more granular level at the types of transfers of value within Orthopaedic Surgery or Internal Medicine given the extent of industry payments within these specialties.
 
 
 
