@@ -71,13 +71,15 @@ open_payments_2020 <- read_csv("https://download.cms.gov/openpayments/SMRY_P0630
 
 
 #downloaded from https://www.cms.gov/OpenPayments/Resources/Reporting-Entities
-variable_info <- read_csv("PY 2016 and upcoming years Submission Data Mapping Document.csv")
+variable_info <- read_csv("./data_files/PY 2016 and upcoming years Submission Data Mapping Document.csv")
 
 
 
 ```
 
 A Physician Supplement file is available on the [same page](https://www.cms.gov/OpenPayments/Data/Dataset-Downloads) where the full datasets are available. This file contains information on each physician in the database, including a unique identification code, their location, their taxonomy codes, and their primary specialty. The taxonomy code is a unique 10-character code designating the classification and specialization of the provider. The most up-to-date reference file of taxonomy codes and specialties is available on the [resource page for reporting entities](https://www.cms.gov/OpenPayments/Resources/Reporting-Entities). Not all physicians in the Open Payments database will have a taxonomy code, so this field may be blank. Taxonomy code reference files for past years are available on the [National Uniform Claim Committee page](https://www.nucc.org/index.php/code-sets-mainmenu-41/provider-taxonomy-mainmenu-40/csv-mainmenu-57). 
+
+To begin, it is helpful to see what kinds of transfers of value are making up the majority of monetary value paid to providers. In the plot below, we see that royalty or license payments receive the vast majority of funds, followed by consulting, and then compensation for services other than consulting. The types of transfers of value made can be relevant for determining how they influence the way medical providers practice, so this is crucial information to track.  
 
 ```{r, fig.height = 8, fig.width = 8}
 
@@ -180,9 +182,12 @@ specialty_payments <- payments_phys_info %>%
 
 ```
 
-First, we can get a better understanding of how payments differ by Primary Specialty. 
+Now that we have looked at transfers of value across all specialties together, we can get a better understanding of how payments differ by Primary Specialty. 
 
-```{r, total amounts per primary specialty}
+<div style = "overflow-x: auto; height: 600px; width = 550px;">
+
+
+```{r, total amounts per primary specialty, fig.width = 10}
 
 # look at total amounts per primary specialty
 specialty_payments %>% 
@@ -211,14 +216,15 @@ specialty_payments %>%
   theme(text = element_text(size = 11),
         axis.title = element_text(face = "bold"),
         axis.text.x = element_text(size = 11, face = "bold"),
-        plot.title = element_text(face = "bold", hjust = .5))
+        plot.title = element_text(face = "bold", hjust = .5)) 
 
 
 
 ```
 
+</div>
 
-It is clear that Allopathic & Osteopathic Physicians make up the vast majority of payments, which is logical given that this division contains the highest number of subspecialties. Now, we can look at how payments are split up among the Allopathic & Osteopathic Physician specialties. 
+It is clear that Allopathic & Osteopathic Physicians make up the vast majority of dollars paid, which is logical given that this division contains the highest number of subspecialties. Now, we can look at how payments are split up among the Allopathic & Osteopathic Physician specialties. 
 
 
 ```{r, fig.height = 9}
@@ -228,12 +234,12 @@ specialty_payments %>%
   ggplot(aes(x = fct_reorder(factor(Specific_Specialty),  Total_Specialty), y = Total_Specialty)) +
   geom_bar(stat = "identity", fill = "#525F75") +
   coord_flip() +
-  labs(title = "Total Payments by Primary Specialty",
+  labs(title = "Total Payments by Specialty\nfor Allopathic & Osteopathic Physicians",
        x = "",
        y = "Total Payments") +
   scale_y_continuous(labels = comma, expand = c(0,0), limits = c(0, 4.5*10^8)) +
   theme_bw() +
-  theme(text = element_text(size = 13),
+  theme(text = element_text(size = 11),
         axis.text.y = element_text(size = 13),
         axis.title = element_text(face = "bold"),
         axis.text.x = element_text(),
@@ -244,14 +250,112 @@ specialty_payments %>%
 Because medical devices are so integral to the practice of orthopaedic surgery, it is unsurprising that this specialty receives the highest amount from industry ([Source](https://journals.sagepub.com/doi/10.1177/0363546517750124)). With this information, we might want to look at a more granular level at the types of transfers of value within Orthopaedic Surgery or Internal Medicine given the extent of industry payments within these specialties.
 
 
+```{r, fig.height = 9}
 
+highest_paid_specialties <- payments_phys_info %>%  
+  separate(Physician_Profile_Primary_Specialty, 
+           sep = "\\|", 
+           into = c("Primary_Specialty", 
+                    "Specific_Specialty"), 
+           extra="drop") %>%
+  filter(Primary_Specialty == "Allopathic & Osteopathic Physicians" &
+           (Specific_Specialty == "Orthopaedic Surgery" | Specific_Specialty == "Internal Medicine")) %>%
+  select(-Primary_Specialty) %>% 
+  group_by(Specific_Specialty, Nature_Of_Payment_Type_Code) %>%
+  summarize(Total = sum(Total_Amount)) %>%
+  left_join(payment_code_descriptions, 
+             by = c("Nature_Of_Payment_Type_Code" = "code"))
+
+
+# needed to make specific words in title colored
+library(ggtext)
+
+# total payments by nature of payment for Orthopaedic Surgery
+highest_paid_specialties %>% 
+  filter(Specific_Specialty == "Orthopaedic Surgery") %>%
+  ggplot(aes(x = fct_reorder(`Nature of Payment`, Total), 
+                 y = Total)) + 
+  geom_bar(stat = "identity", fill = "#75525F") +
+  coord_flip() +
+  scale_y_continuous(labels = comma, expand = c(0,0), limits = c(0, 3.15*10^8)) +
+  theme_bw() +
+  labs(x = "Total Payments", y = "Nature of Payment", title = "Total Payments by<br>Nature of Payment <br>for <b style='color:#B25533'>Orthopaedic Surgery</b>") +
+  theme(text = element_text(size = 11),
+        axis.text.y = element_text(size = 13),
+        axis.title = element_text(face = "bold"),
+        axis.text.x = element_text(),
+        plot.title = element_markdown(face = "bold", hjust = .5))
+
+
+# total payments by nature of payment for Internal Medicine
+highest_paid_specialties %>% 
+  filter(Specific_Specialty == "Internal Medicine") %>%
+  ggplot(aes(x = fct_reorder(`Nature of Payment`, Total), 
+                 y = Total)) + 
+  geom_bar(stat = "identity", fill = "#75525F") +
+  coord_flip() +
+  scale_y_continuous(labels = comma, expand = c(0,0), limits = c(0, 1.5*10^8)) +
+  theme_bw() +
+  labs(x = "Total Payments", y = "Nature of Payment", title = "Total Payments by<br> Nature of Payment <br>for <b style='color:#B25533'>Internal Medicine</b>") +
+  theme(text = element_text(size = 13),
+        axis.text.y = element_text(size = 13),
+        axis.title = element_text(face = "bold"),
+        axis.text.x = element_text(),
+        plot.title = element_markdown(face = "bold", hjust = .5))
+
+
+
+
+
+
+
+```
+
+This reveals a notable difference in what types of transfers of values are made between the specialties Orthopaedic Surgery and Internal Medicine. For Orthopaedic Surgery, the category with the highest sum of transfers of value is the royalty or licensure, which is likely related to the device-dependent nature of the specialty. For Internal Medicine, meanwhile, we see that compensation for services other than consulting, which is a more ambiguous category, has the highest sum of transfers of value, followed by consulting fees.
+
+<div style = "overflow-y: auto; height: 500px; width = 500px;">
+
+```{r, fig.height = 40}
+
+
+# plot distribution of total payments per physician, faceted by specialty 
+payments_phys_info %>%
+  separate(Physician_Profile_Primary_Specialty, 
+           sep = "\\|", 
+           into = c("Primary_Specialty", 
+                    "Specific_Specialty"), 
+           extra="drop") %>%
+  filter(Primary_Specialty == "Allopathic & Osteopathic Physicians") %>%
+  group_by(Specific_Specialty) %>%
+  mutate(num_phys = n(),
+         max_payment = max(Total_Amount),
+         Specific_Specialty = paste0(Specific_Specialty, "\nMaximum Payment: $", 
+                                     format(max_payment,scientific = FALSE))) %>% 
+  ggplot(aes(x=Total_Amount)) + 
+  scale_x_continuous(labels = comma) +
+  geom_histogram(bins = 80, fill = "#596E83") +
+  labs(x = "Total Payments Received", y = "Number of Providers",
+       title = "Distribution of Total Payments per Provider") +
+  facet_wrap(~fct_reorder(Specific_Specialty,num_phys, .desc = TRUE), scales ="free", ncol=2) +
+  theme_bw() +
+  scale_y_log10(labels = comma) +
+  theme(plot.title = element_text(face = "bold", hjust = .5),
+        strip.background = element_rect(fill = "#E1E5ED"), 
+        strip.text = element_text(face = "bold"))
+
+
+```
+
+</div>
+
+This enables to see how skewed the distributions are across specialties, with the majority of payments being very small in comparison to the maximum payment per provider. Note the use of a log scale on the y-axis for the number of physicians: the distributions are so skewed that only a single bar (the one near zero) is visible across most specialties when the scale is not lo transformed. 
 
 
 # Discussion of the Implications of the Open Payments Data 
 
 ### Prevalence & Impact of Industry Ties 
 
-In many ways, the Sunshine Act has represented a much needed shift toward greater transparency ([Source](https://www.statnews.com/2017/01/25/sunshine-act-physicians-conflict-of-interest/)) Historically, relying on medical providers to disclose potential conflicts of interest in medical journal articles has not been effective. To look at compliance with financial disclosures in medical papers, one study looked at payments made by several orthopedic device companies device companies to their consultants in 2007, before the implementation of the Open Payments System ([Source](https://jamanetwork.com/journals/jamainternalmedicine/fullarticle/226394)). 
+In many ways, the Sunshine Act has represented a much needed shift toward greater transparency ([Source](https://www.statnews.com/2017/01/25/sunshine-act-physicians-conflict-of-interest/)).  Historically, relying on medical providers to disclose potential conflicts of interest in medical journal articles has not been effective. To look at compliance with financial disclosures in medical papers, one study looked at payments made by several orthopedic device companies device companies to their consultants in 2007, before the implementation of the Open Payments System ([Source](https://jamanetwork.com/journals/jamainternalmedicine/fullarticle/226394)). 
 A financial interest was disclosed in less than half of papers with a co-author receiving a million or more from one of the analyzed device companies. Of note, failing to disclose these financial conflicts of interest goes against the policies upheld by many of the medical journals included. 
 
 Additionally, industry ties related to those writing clinical guidelines is a particularly notable conflict of interest given the impact these guidelines have on the care patients receive. These  conflicts of interests have been shown to be pervasive across various fields. In psychiatry, concern has been raised over financial ties between panel members contributing to the Diagnostic and Statistical Manual of Mental Disorders ([Source](https://www-karger-com.libproxy.smith.edu/Article/FullText/357499)).  Of particular interest here are the cases where panel members responsible for decisions regarding the inclusion of new disorders are tied to companies involved in clinical trials to treat those specific disorders. The results showed that over a quarter of work group members (who focus on a specific diagnostic category) and over 60% of task force members (who oversee the entire manual) reported at least one conflict of interest to a trial drug manufacturer.
