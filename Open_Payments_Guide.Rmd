@@ -103,7 +103,8 @@ payment_code_descriptions <- variable_info %>%
 open_payments_2020 %>% 
   group_by(Nature_Of_Payment_Type_Code) %>% 
   summarize(`Total Payments`= sum(Total_Amount)) %>% 
-  inner_join(payment_code_descriptions, by = c("Nature_Of_Payment_Type_Code" = "code")) %>% 
+  inner_join(payment_code_descriptions, 
+             by = c("Nature_Of_Payment_Type_Code" = "code")) %>% 
   ggplot(aes(x = fct_reorder(factor(`Nature of Payment`), `Total Payments`), 
              y = `Total Payments`)) +
   geom_bar(stat = "identity", fill = "#527075") +
@@ -126,6 +127,20 @@ open_payments_2020 %>%
 ```
 
 
+```{r}
+
+#download Physician Supplement file from https://www.cms.gov/OpenPayments/Data/Dataset-Downloads
+
+phys_info <- download.file("https://download.cms.gov/openpayments/PHPRFL_P063021.ZIP", "./data_files/physician_supplement")
+
+# get list of files in the downloaded zip file
+file_list <- unzip("./data_files/physician_supplement", list = TRUE)
+
+# read the csv contained in the zip file into a data frame 
+phys_info <- read_csv(unz("./data_files/physician_supplement", file_list[1,1]))
+
+         
+```
 
 
 
