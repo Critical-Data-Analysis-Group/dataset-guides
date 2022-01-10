@@ -53,7 +53,7 @@ The transfers of value are collected throughout the entire calendar year, and th
 
 # Analyzing the Open Payments Data Locally
 
-The data sets are available for download on the Centers for [Medicare & Medicaid services site](https://www.cms.gov/OpenPayments/Data/Dataset-Downloads). The files here are large compressed files that the user will have to unzip. There is also a file titled “Physician Supplement File for all Program Years” that holds identifying information on each physician featured in the data, which includes a unique identification number as well as information on demographic characteristics and specialty of the individual. There is also a [dataset explorer page](https://openpaymentsdata.cms.gov/datasets?sort=modified) where you can search for a narrower subset of the larger files. Files available here include “Research Payment Data – Detailed Dataset 2017 Reporting Year” and “2020 payments grouped by covered recipient and nature of payments”. You can also filter these files to only include rows that meet specific criteria before downloading, which will further decrease the file size. 
+The data sets are available for download on the Centers for [Medicare & Medicaid services site](https://www.cms.gov/OpenPayments/Data/Dataset-Downloads). The files here are large compressed files that the user will have to unzip. On this page, there is also a file titled “Physician Supplement File for all Program Years” that holds identifying information on each physician featured in the data, as well as a Methodology and Data Dictionary. As an alternative to downloading the full zipfiles for each year, there is also a [dataset explorer page](https://openpaymentsdata.cms.gov/datasets?sort=modified) where you can search for a narrower subset of the larger files. Files available here include “Research Payment Data – Detailed Dataset 2017 Reporting Year” and “2020 payments grouped by covered recipient and nature of payments”. You can filter these files to only include rows that meet specific criteria before downloading, which will further decrease the file size. 
 
 Here, we take a look at a file from the [dataset explorer page](https://openpaymentsdata.cms.gov/datasets?sort=modified). This subset in particular is titled ["2020 payments grouped by reporting entities, covered recipient, and nature of payments"](https://openpaymentsdata.cms.gov/dataset/5nqj-xtmq).
 
@@ -77,11 +77,12 @@ variable_info <- read_csv("PY 2016 and upcoming years Submission Data Mapping Do
 
 ```
 
+A Physician Supplement file is available on the [same page](https://www.cms.gov/OpenPayments/Data/Dataset-Downloads) where the full datasets are available. This file contains information on each physician in the database, including a unique identification code, their location, their taxonomy codes, and their primary specialty. The taxonomy code is a unique 10-character code designating the classification and specialization of the provider. The most up-to-date reference file of taxonomy codes and specialties is available on the [resource page for reporting entities](https://www.cms.gov/OpenPayments/Resources/Reporting-Entities). Not all physicians in the Open Payments database will have a taxonomy code, so this field may be blank. Taxonomy code reference files for past years are available on the [National Uniform Claim Committee page](https://www.nucc.org/index.php/code-sets-mainmenu-41/provider-taxonomy-mainmenu-40/csv-mainmenu-57). 
 
 ```{r, fig.height = 8, fig.width = 8}
 
 # from csv file containing variable information, extract the code descriptions for the Nature_Of_Payment_Type_Code Variable
-# edit text by adding newlines for more readable labels when plotting 
+# edavait text by adding newlines for more readable labels when plotting 
 payment_code_descriptions <- variable_info %>% 
   filter(str_detect(X10, "NATURE_OF_PAYMENT")) %>% 
   select(X10, X5) %>% 
@@ -127,7 +128,8 @@ open_payments_2020 %>%
 ```
 
 
-```{r}
+
+```{r, loading needed files}
 
 #download Physician Supplement file from https://www.cms.gov/OpenPayments/Data/Dataset-Downloads
 
@@ -139,13 +141,88 @@ file_list <- unzip("./data_files/physician_supplement", list = TRUE)
 # read the csv contained in the zip file into a data frame 
 phys_info <- read_csv(unz("./data_files/physician_supplement", file_list[1,1]))
 
-         
+# select desired variables from full csv
+phys_info <- phys_info %>% select(Physician_Profile_ID, 
+                                  Physician_Profile_State,
+                                  Physician_Profile_Primary_Specialty,
+                                  Physician_Profile_OPS_Taxonomy_1,
+                                  Physician_Profile_OPS_Taxonomy_2,
+                                  Physician_Profile_OPS_Taxonomy_3,
+                                  Physician_Profile_OPS_Taxonomy_4,
+                                  Physician_Profile_OPS_Taxonomy_5,
+                                  Physician_Profile_First_Name,
+                                  Physician_Profile_Middle_Name,
+                                  Physician_Profile_Last_Name)
+
+# read taxonomy code reference sheet from 2020         
+tax_codes <- read_csv("https://www.nucc.org/images/stories/CSV/nucc_taxonomy_201.csv")
+
+# join open payments data to physician info data
+payments_phys_info <- open_payments_2020 %>% 
+  left_join(phys_info, by = c("Recipient_ID" = "Physician_Profile_ID")) 
+
+
+# note -- need to escape | with double backslash for separate to work correctly
+specialty_payments <- payments_phys_info %>% 
+  group_by(Physician_Profile_Primary_Specialty) %>% 
+  summarize(Total= sum(Total_Amount)) %>% 
+  separate(Physician_Profile_Primary_Specialty, 
+           sep = "\\|", 
+           into = c("Primary_Specialty", 
+                    "Specific_Specialty"), 
+           extra="drop") %>% 
+    group_by(Primary_Specialty, Specific_Specialty) %>%
+    summarize(Total_Specialty = sum(Total), 
+              Number_Subspecialties_Within = n()) 
+
+
+
+
+```
+
+First, we can get a better understanding of how payments differ by Primary Specialty. 
+
+```{r, total amounts per primary specialty}
+# look at total amounts per primary specialty
+specialty_payments %>% 
+  group_by(Primary_Specialty) %>% 
+  summarize(Total = sum(Total_Specialty), 
+           Specialties_Within = n()) %>%
+  mutate(Primary_Specialty = str_replace(Primary_Specialty, 
+                                         "Providers",
+                                         "\nProviders"),
+         Primary_Specialty = str_replace(Primary_Specialty, 
+                                         "Service",
+                                         "\nService"),
+         Primary_Specialty = str_replace(Primary_Specialty, 
+                                         "Physician",
+                                         "\nPhysician")) %>%
+  filter(!is.na(Primary_Specialty)) %>%
+  ggplot(aes(x = fct_reorder(factor(Primary_Specialty),  Total), y = Total)) +
+  geom_bar(stat = "identity", fill = "#525F75") +
+  labs(title = "Total Payments by Primary Specialty",
+       x = "",
+       y = "Total Payments") +
+  scale_y_continuous(labels = comma, 
+                     expand = c(0,0),
+                     limits = c(0, 1.8*10^9)) +
+  theme_bw() +
+  theme(text = element_text(size = 11),
+        axis.title = element_text(face = "bold"),
+        axis.text.x = element_text(size = 11, face = "bold"),
+        plot.title = element_text(face = "bold", hjust = .5))
+
+
+
 ```
 
 
+It is clear that Allopathic & Osteopathic Physicians make up the vast majority of payments, which is logical given that this division contains the highest number of subspecialties. Now, we can look at how payments are split up among the Allopathic & Osteopathic Physician specialties.
 
 
+```{r}
 
+```
 
 
 
