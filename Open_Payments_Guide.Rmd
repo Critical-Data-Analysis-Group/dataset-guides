@@ -14,6 +14,12 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)
 ```
 
+
+<br>
+<br>
+
+# Introduction to the Open Payments Data 
+
 ### Overview
 
 The Open Payments data set contains records of payments made by drug and medical device companies to physicians, non-physician practitioners (NPPs), and teaching hospitals. It was created by the Centers for Medicare and Medicaid Services to meet the criteria established in the [Physician Payment Sunshine Act](https://www.advamed.org/legal/physician-payments-sunshine-act/). This act aims to increase the transparency in the United States healthcare system by publicly documenting financial ties between medical practitioners or facilities and drug and device companies. These ties have been extremely prevalent for over a decade: a survey conducted in 2009 using a stratified random sample of primary care providers and specialists revealed the percentage of physicians with any type of industry relationship was 84% ([Source](https://jamanetwork.com/journals/jamainternalmedicine/fullarticle/226207)). Beyond transparency, mandating disclosure is intended to discourage inappropriate relationships and provide a system of accountability ([Source](https://www.cms.gov/files/document/open-payments-user-guide-reporting-entities.pdf)).
@@ -44,6 +50,93 @@ The data submission process occurs online. To submit their transfers of value, r
 
 The transfers of value are collected throughout the entire calendar year, and then data from the previous year must be submitted by reporting entities between February 1st and March 31st ([Source](https://www.cms.gov/openpayments)). Data review occurs from April 1st to May 30th. Covered recipients have the opportunity to review payments related to them before the data is made public, but although this review is encouraged, it is not mandatory. In order to see what transfers of value that have been reported in their name and thus to review this information for accuracy, providers must register with the system, otherwise they will not receive notification of how they will appear in the data ([Source](https://www.policymed.com/2013/11/physician-payment-sunshine-act-open-payments-may-cause-physicians-to-change-company-interactions-concerns-about-accurac.html)). The Centers for Medicare & Medicaid services does not mediate disputes, so it is up to the covered recipient and reporting entity to come to a resolution ([Source](https://www.cms.gov/files/document/physician-and-teaching-hospital-review-and-dispute-tutorial.pdf)). If the dispute is resolved in the review period, the corrected data will be published in the initial publication, but if the dispute is not resolved in this time frame, the transaction is marked as disputed in the initial publication. Corrections made after the review period are not visible in the initial publication but are made available the following year. The data are released to the public by the Centers for Medicare & Medicaid services (accessible at OpenPaymentsData.cms.gov) for the initial publication by June 30th.
 
+
+# Analyzing the Open Payments Data Locally
+
+The data sets are available for download on the Centers for [Medicare & Medicaid services site](https://www.cms.gov/OpenPayments/Data/Dataset-Downloads). The files here are large compressed files that the user will have to unzip. There is also a file titled “Physician Supplement File for all Program Years” that holds identifying information on each physician featured in the data, which includes a unique identification number as well as information on demographic characteristics and specialty of the individual. There is also a [dataset explorer page](https://openpaymentsdata.cms.gov/datasets?sort=modified) where you can search for a narrower subset of the larger files. Files available here include “Research Payment Data – Detailed Dataset 2017 Reporting Year” and “2020 payments grouped by covered recipient and nature of payments”. You can also filter these files to only include rows that meet specific criteria before downloading, which will further decrease the file size. 
+
+Here, we take a look at a file from the [dataset explorer page](https://openpaymentsdata.cms.gov/datasets?sort=modified). This subset in particular is titled ["2020 payments grouped by reporting entities, covered recipient, and nature of payments"](https://openpaymentsdata.cms.gov/dataset/5nqj-xtmq).
+
+```{r, loading packages and data}
+
+
+# load needed packages
+library(tidyverse)
+library(forcats)
+library(scales)
+
+#2020 payments grouped by reporting entities, covered recipient, and nature of payments
+#downloaded from the page https://openpaymentsdata.cms.gov/dataset/5nqj-xtmq
+open_payments_2020 <- read_csv("https://download.cms.gov/openpayments/SMRY_P06302021/pblctn-smry-by-amgpo-by-cr-by-ntr-of-pymt-pgyr2019-p01222021-12162020-joined.5nqj-xtmq.csv")
+
+
+#downloaded from https://www.cms.gov/OpenPayments/Resources/Reporting-Entities
+variable_info <- read_csv("PY 2016 and upcoming years Submission Data Mapping Document.csv")
+
+
+
+```
+
+
+```{r, fig.height = 8, fig.width = 8}
+
+# from csv file containing variable information, extract the code descriptions for the Nature_Of_Payment_Type_Code Variable
+# edit text by adding newlines for more readable labels when plotting 
+payment_code_descriptions <- variable_info %>% 
+  filter(str_detect(X10, "NATURE_OF_PAYMENT")) %>% 
+  select(X10, X5) %>% 
+  separate(col=X5, sep = "\n", 
+           into = as.character(c(1:15))) %>% 
+  pivot_longer(cols = c(2:16)) %>% 
+  select(-name, -X10) %>% 
+  separate(value, sep = "=", into = c("code", "Nature of Payment")) %>% 
+  mutate(code = as.numeric(str_replace_all(code,'[\r\n"]', '')),
+         `Nature of Payment` = str_replace(`Nature of Payment`, ";", ''),
+         `Nature of Payment` = str_replace(`Nature of Payment`, " for a", "\nfor a"),
+         `Nature of Payment` = str_replace(`Nature of Payment`, "including serving as faculty", "including\nserving as faculty"), 
+         `Nature of Payment` = str_replace(`Nature of Payment`, "continuing education", "\ncontinuing education"),
+         `Nature of Payment` = str_replace(`Nature of Payment`, "continuing education", "continuing education")) 
+
+
+# calculate sum of payments per nature of payment category,
+# join with variable descriptions, and plot the results 
+open_payments_2020 %>% 
+  group_by(Nature_Of_Payment_Type_Code) %>% 
+  summarize(`Total Payments`= sum(Total_Amount)) %>% 
+  inner_join(payment_code_descriptions, by = c("Nature_Of_Payment_Type_Code" = "code")) %>% 
+  ggplot(aes(x = fct_reorder(factor(`Nature of Payment`), `Total Payments`), 
+             y = `Total Payments`)) +
+  geom_bar(stat = "identity", fill = "#527075") +
+  labs(title = "Total Payments by Nature of Payment",
+       x = "Nature of Payment",
+       y = "Total Payments") +
+  scale_y_continuous(labels = comma, 
+                     expand = c(0,0), 
+                     limits = c(0, 850000000), 
+                     breaks = seq(0, 850000000, by = 100000000)) +
+  theme_bw() +
+  coord_flip() +
+  theme(text = element_text(),
+        axis.title = element_text(face = "bold"),
+        axis.text.y = element_text(lineheight = .8),
+        axis.text.x = element_text(angle = 10),
+        plot.title = element_text(face = "bold", hjust = .5))
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+# Discussion of the Implications of the Open Payments Data 
 
 ### Prevalence & Impact of Industry Ties 
 
