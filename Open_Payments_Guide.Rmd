@@ -348,7 +348,76 @@ payments_phys_info %>%
 
 </div>
 
-This enables to see how skewed the distributions are across specialties, with the majority of payments being very small in comparison to the maximum payment per provider. Note the use of a log scale on the y-axis for the number of physicians: the distributions are so skewed that only a single bar (the one near zero) is visible across most specialties when the scale is not lo transformed. 
+This enables to see how skewed the distributions are across specialties, with the majority of payments being very small in comparison to the maximum payment per provider. Note the use of a log scale on the y-axis for the number of physicians: the distributions are so skewed that only a single bar (the one near zero) is visible across most specialties when the scale is not log transformed. 
+
+Because the data contains geographical information, 
+
+
+
+```{r}
+
+library(sf)
+library(tigris)
+# needed to get geographic data for U.S. with Hawaii and Alaska repositioned 
+library(albersusa)
+
+
+# get mean and median payments per state
+values_by_state <- payments_phys_info %>% 
+  group_by(Physician_Profile_State) %>% 
+  summarize(Mean = mean(Total_Amount),
+            Median = median(Total_Amount)) 
+  
+# load U.S. state map with Alaska and Hawaii repositioned
+us_states <- usa_sf()
+st_crs(us_states) <- "EPSG:4326"
+st_crs(us_states)
+
+
+values_geo <- geo_join(us_states, 
+                     values_by_state, 
+                      by_sp = "iso_3166_2",
+                      by_df = "Physician_Profile_State")
+        
+
+
+# plot mean payment per provider by state
+values_geo %>% 
+    ggplot(aes(fill = Mean)) + 
+    geom_sf(aes(geometry=geometry), size = 0.2) +
+    scale_fill_gradient(low = "#ECF4FE", high ="#102A68") +
+    theme_minimal() +
+    labs(x="", y ="", fill = "Mean Payment\nper Provider",
+         title = "Mean Payment Per Provider by State") +
+          theme(axis.ticks = element_blank(),
+          axis.text.x = element_blank(),
+          axis.text.y = element_blank(),
+          panel.grid = element_blank(),
+          plot.title = element_text(face = "bold", hjust = .5),
+          legend.key.size = unit(1.5, 'cm'),
+          text = element_text(size = 14),
+          legend.title = element_text(face = "bold")) 
+
+
+# plot median payment per provider by state
+values_geo %>% 
+    ggplot(aes(fill = Median)) + 
+    geom_sf(aes(geometry=geometry), size = 0.2) +
+    scale_fill_gradient(low = "#ECF4FE", high ="#102A68", trans = "log") +
+    theme_minimal() +
+    labs(x="", y ="", fill = "Median Payment\nper Provider",
+         title = "Median Payment Per Provider") +
+          theme(axis.ticks = element_blank(),
+          axis.text.x = element_blank(),
+          axis.text.y = element_blank(),
+          panel.grid = element_blank(),
+          plot.title = element_text(face = "bold", hjust = .5),
+          text = element_text(size = 14),
+          legend.title = element_text(face = "bold")) 
+
+
+
+```
 
 
 # Discussion of the Implications of the Open Payments Data 
