@@ -44,11 +44,57 @@ There are various kinds of transfers of value from reporting entities to covered
 
 ##### Submission
 
-The data submission process occurs online. To submit their transfers of value, reporting entities must log into a [portal](https://portal.cms.gov/portal/) where they can fill out the required information. Extensive documentation is available to reporting entities, including a 375 page [user guide](https://www.cms.gov/files/document/open-payments-user-guide-reporting-entities.pdf) that provides background on the program and its intentions as well as the technical details of filling out the form. There are also additional resources to ensure reporting entities can meet the accuracy standards of the form, such as the Drug Name and National Drug Code (NDC) Reference Data CSV file, which can be used to fill in necessary information on a payment associated with a specific drug ([Source](https://www.cms.gov/OpenPayments/Downloads/Drug-Name-and-NDC-Reference-Data-Instructions.pdf)). The list of drugs reported in this reference is not comprehensive. For 2021, it included the drug name and code information for all the drugs listed in the FDA National Drug Code Directory from Calendar Year 2013 to December 31st, 2020 as well as drugs that have been removed from the directory. New drugs that are added to the directory outside the period the reference file is based on can be accessed at the [FDA NDC site](https://www.fda.gov/drugs/drug-approvals-and-databases/national-drug-code-directory) directly, which is updated daily.   
+The data submission process occurs online. To submit their transfers of value, reporting entities must log into a [portal](https://portal.cms.gov/portal/) where they can fill out the required information. Extensive documentation is available to reporting entities, including a 375 page [user guide](https://www.cms.gov/files/document/open-payments-user-guide-reporting-entities.pdf) that provides background on the program and its intentions as well as the technical details of filling out the form. There are also additional resources to ensure reporting entities can meet the accuracy standards of the form, such as the Drug Name and National Drug Code (NDC) Reference Data CSV file, which can be used to fill in necessary information on a payment associated with a specific drug ([Source](https://www.cms.gov/OpenPayments/Downloads/Drug-Name-and-NDC-Reference-Data-Instructions.pdf)). The list of drugs reported in this reference is not comprehensive. For 2021, it included the drug name and code information for all the drugs listed in the FDA National Drug Code Directory from Calendar Year 2013 to December 31st, 2020 as well as drugs that have been removed from the directory. New drugs that are added to the directory outside the period the reference file is based on can be accessed at the [FDA NDC site](https://www.fda.gov/drugs/drug-approvals-and-databases/national-drug-code-directory) directly, which is updated daily. There are also [example csv files](https://www.cms.gov/OpenPayments/Downloads/CSV-Sample-File-Research-Payments-%5BUpdated-May-June-2014%5D.csv) for different time periods to ensure they format the data correctly. 
+
 
 ##### Timeline 
 
 The transfers of value are collected throughout the entire calendar year, and then data from the previous year must be submitted by reporting entities between February 1st and March 31st ([Source](https://www.cms.gov/openpayments)). Data review occurs from April 1st to May 30th. Covered recipients have the opportunity to review payments related to them before the data is made public, but although this review is encouraged, it is not mandatory. In order to see what transfers of value that have been reported in their name and thus to review this information for accuracy, providers must register with the system, otherwise they will not receive notification of how they will appear in the data ([Source](https://www.policymed.com/2013/11/physician-payment-sunshine-act-open-payments-may-cause-physicians-to-change-company-interactions-concerns-about-accurac.html)). The Centers for Medicare & Medicaid services does not mediate disputes, so it is up to the covered recipient and reporting entity to come to a resolution ([Source](https://www.cms.gov/files/document/physician-and-teaching-hospital-review-and-dispute-tutorial.pdf)). If the dispute is resolved in the review period, the corrected data will be published in the initial publication, but if the dispute is not resolved in this time frame, the transaction is marked as disputed in the initial publication. Corrections made after the review period are not visible in the initial publication but are made available the following year. The data are released to the public by the Centers for Medicare & Medicaid services (accessible at OpenPaymentsData.cms.gov) for the initial publication by June 30th.
+
+
+# Filling Out the Form
+
+
+Reporting entities must go through a multi-step registration process, and assign users to four roles:
+
+* officer - someone of high rank within the entity who serves as the overall manager of the submission process and oversees all the user roles  
+* submitter - person who submits the data on all transfers of value and is notified of any disputes, New User Registration:
+* attester - person who attests to the accuracy of the data
+* compliance - person who oversees the communications with the CMS Compliance Team
+
+Once the entity is successfully registered, they can begin the data entry process. The submissions page has multiple options.
+
+![](./images/submissions.png){width = 400px}
+
+
+From here, they can validate the physician information for the recipient of the transfer of value. 
+
+![](./images/validating_phys.png){width = 400px}
+
+
+
+If the entity has many files to upload, they may choose the bulk file upload option. Using the csv template available on the resources page for the correct year, they can create a csv file for each transfer of value and upload them to the portal. All the payments of they upload for a bulk upload must be of the same category; for example, here, the category is General Payments.
+
+![](./images/upload.png){width = 400px}
+
+Rather than using the bulk upload option, reporting entities can also do manual entry through the graphic user interface. For more information on the fields they fill out here, they can reference the Submission Data Mapping Document on the [resources page](https://www.cms.gov/OpenPayments/Resources/Reporting-Entities). Some of the information they must enter is as follows.
+
+![](./images/manual1.png){width = 400px}
+
+They must fill in product information for all products related to the transfer of value. This information includes whether the product is covered or not. 
+
+![](./images/products.png)
+
+If the drug or biological name and NDC combination entered is valid, then a message will appear that asserts this validity. Otherwise, they will receive the following error message. They can correct this by going to the [NDC database](https://www.accessdata.fda.gov/scripts/cder/ndc/index.cfm) to obtain the correct combination of name and code. 
+
+![](./images/warning.png)
+
+Then they can enter general information about the payment. 
+
+![](./images/general.png)
+
+
+
 
 
 # Analyzing the Open Payments Data Locally
