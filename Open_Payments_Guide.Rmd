@@ -64,22 +64,22 @@ Reporting entities must go through a multi-step registration process, and assign
 
 Once the entity is successfully registered, they can begin the data entry process. The submissions page has multiple options.
 
-![](./images/submissions.png){width = 400px}
+![](./images/submissions.png)
 
 
 From here, they can validate the physician information for the recipient of the transfer of value. 
 
-![](./images/validating_phys.png){width = 400px}
+![](./images/validating_phys.png)
 
 
 
 If the entity has many files to upload, they may choose the bulk file upload option. Using the csv template available on the resources page for the correct year, they can create a csv file for each transfer of value and upload them to the portal. All the payments of they upload for a bulk upload must be of the same category; for example, here, the category is General Payments.
 
-![](./images/upload.png){width = 400px}
+![](./images/upload.png)
 
 Rather than using the bulk upload option, reporting entities can also do manual entry through the graphic user interface. For more information on the fields they fill out here, they can reference the Submission Data Mapping Document on the [resources page](https://www.cms.gov/OpenPayments/Resources/Reporting-Entities). Some of the information they must enter is as follows.
 
-![](./images/manual1.png){width = 400px}
+![](./images/manual1.png)
 
 They must fill in product information for all products related to the transfer of value. This information includes whether the product is covered or not. 
 
